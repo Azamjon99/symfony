@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Controller\AbstractApiController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Product;
 use App\Form\ProductType;
@@ -30,23 +29,8 @@ class ProductController extends AbstractApiController
 
     public function createAction(ManagerRegistry $doctrine, Request $request): Response
     {
-        // $form = $this->buildForm(ProductType::class);
-        //         $entityManager = $doctrine->getManager();   
-        // // $form = $this->buildForm(ProductType::class);
-
-        // $product = new Product();
-        // $product->setName('Keyboard');
-        // $product->setColor('Keyboard');
-        // $product->setType('Keyboard');
-        // $entityManager->persist($product);       
-        //  $entityManager->flush();
-        // return new Response('Saved new product with id '.$product->getId());
-
-
-        $form = $this->buildForm(ProductType::class);
 
         $form->handleRequest($request);
-
         if (!$form->isSubmitted() || !$form->isValid()) {
             return $this->respond($form, Response::HTTP_BAD_REQUEST);
         }
@@ -61,37 +45,61 @@ class ProductController extends AbstractApiController
         // return $this->respond($product);
     }
 
-    public function updateAction(ManagerRegistry $doctrine,Request $request,  $id)
+    public function updateAction(ManagerRegistry $doctrine,Request $request, int $id)
     {
-        $entityManager = $doctrine->getManager();
-
-        $product = $entityManager->getRepository(Product::class)->find($id);
+        $product = $this->em->getRepository(Product::class)->findOneBy(['id' => $id]);
         if (!$product) {
-            throw $this->respond(
-                'No product found for id '.$id, Response::HTTP_NOT_FOUND
-            );
+            return $this->respond("Product does not exist for this customer", Response::HTTP_NOT_FOUND);
         }
-        $form = $this->buildForm(ProductType::class, $product, ['method' => $request->getMethod()]);
+        $data = json_decode($request->getContent(), true);
+        $form = $this->createForm( new ProductType(), $product);
+        $form->submit($data);
+        
+    //     $form = $this->buildForm(ProductType::class, $product, 
+    //     [
+    //         'action' => $this->generateUrl('products_update', ['id' => $id]),
+    //         'method'=>'PATCH']
+    // );
         $form->handleRequest($request);
         if (!$form->isSubmitted() || !$form->isValid()) {
             return $this->respond($form, Response::HTTP_BAD_REQUEST);
         }
-        
-        $entityManager->persist($product);
-        $entityManager->flush();
-        return $this->respond($product);
 
-        // dd($id);
+        /** @var Product $product */
+        $product = $form->getData();
+        // dd($product);
+        $doctrine->getManager()->persist($product);
+        $doctrine->getManager()->flush();
+        return $this->respond($product);
     }
 
     public function showAction(ManagerRegistry $doctrine,Request $request, int $id)
     {
         $product = $this->em->getRepository(Product::class)->findOneBy(['id' => $id]);
         if (!$product) {
-            throw new NotFoundHttpException('Product does not exist for this customer');
+            return $this->respond("Product does not exist ", Response::HTTP_NOT_FOUND);
+
         }
         return $this->respond($product);
 
         // dd($id);
+    }
+
+    public function deleteAction(ManagerRegistry $doctrine, int $id)
+    {
+        ;
+
+        $cart = $this->em->getRepository(Product::class)->findOneBy([
+            'id' => $id,
+        ]);
+
+        if (!$cart) {
+            return $this->respond("Product does not exist ", Response::HTTP_NOT_FOUND);
+        }
+
+        $doctrine->getManager()->remove($cart);
+        $doctrine->getManager()->flush();
+
+        return $this->respond(null);
     }
 }
