@@ -1,7 +1,17 @@
-controllers:
-    resource: ../src/Controller/
-    type: annotation
+# controllers:
+#     resource: ../src/Controller/
+#     type: annotation
 
-kernel:
-    resource: ../src/Kernel.php
-    type: annotation
+# kernel:
+#     resource: ../src/Kernel.php
+#     type: annotation
+
+products:
+    path: /api/product 
+    controller: App\Controller\ProductController::indexAction
+    methods : [GET]
+
+products_store:
+    path: /api/product_store
+    controller: App\Controller\ProductController::createAction
+    methods : [POST]
