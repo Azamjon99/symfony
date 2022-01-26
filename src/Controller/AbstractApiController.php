@@ -9,12 +9,12 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-abstract class AbstractApiController extends AbstractController
+abstract class AbstractApiController extends AbstractFOSRestController
 {
     protected function buildForm(string $type, $data = null, array $options = []): FormInterface
     {
         $options = array_merge($options, [
-           'csrf_protection' => false,
+        //    'csrf_protection' => false,
         ]);
 
         return $this->container->get('form.factory')->createNamed('', $type, $data, $options);

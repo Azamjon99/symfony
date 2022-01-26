@@ -15,3 +15,12 @@ products_store:
     path: /api/product_store
     controller: App\Controller\ProductController::createAction
     methods : [POST]
+
+products_update:
+    path: /api/product_update/{id}
+    controller: App\Controller\ProductController::updateAction
+    methods : [PUT]
+products_show:
+    path: /api/product_show/{id}
+    controller: App\Controller\ProductController::showAction
+    methods : [GET]
