@@ -29,16 +29,18 @@ products_delete:
 products_update:
     path: /api/product_update/{id}
     controller: App\Controller\ProductController::products_update
-    methods : [PATCH]       
-register:
-  path: /api/register
-  controller: App\Controller\AuthController::register
-  methods: POST
+    methods : [PATCH]    
+
+# register:
+#   path: /api/register
+#   controller: App\Controller\AuthController::register
+#   methods: POST
 
 api_login_check:
   path: /api/login_check
-  controller: App\Controller\AuthController::getTokenUser
+  
+#   controller: App\Controller\AuthController::getTokenUser
 
-test:
-  path: /api/test
-  controller: App\Controller\ApiController::test
+# test:
+#   path: /api/test
+#   controller: App\Controller\ApiController::test
